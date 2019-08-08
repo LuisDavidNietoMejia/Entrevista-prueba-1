@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Comments;
 use App\Publication;
+use App\User;
 use App\Clases\MyPublications;
 use App\Repositories\CommentRepository;
 use App\Http\Requests\CommentsRequest;
+use Mail;
+use App\Mail\SengGridComments;
+
+
 
 class CommentsController extends Controller
 {
@@ -37,15 +44,64 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CommentsRequest $request,CommentRepository $commentObj)
+    public function store(CommentsRequest $request, CommentRepository $commentObj)
     {
-        $result = $commentObj->create($request);
-        
-        session()->flash($result['status'],$result['message']);
-        
-        return redirect()->action(
-            'PublicationsController@show', ['id' => $request->publication]
-        );
+        try{
+            
+             //iniciamos transaction
+             DB::beginTransaction();
+            
+            $ObjPublications = new MyPublications();
+            $countUser = $ObjPublications->getValidateUserComment(Auth::user()->id, $request->publication);
+           
+            if($countUser == 0){
+                $result = $commentObj->create($request);      
+            }
+            else{
+
+                $result = array('status' => 'Error', 'message' => 'Ya comento esta publicacion');
+
+                session()->flash($result['status'], $result['message']);
+    
+                return redirect()->action(
+                    'PublicationsController@show',
+                    ['id' => $request->publication]
+                );
+            }
+           
+           
+            $publication = Publication::findorfail($request->publication);
+            $user = User::findorfail(Auth::user()->id);
+            $comment = $request->content;
+    
+            Mail::to($publication->user->email)->send(new SengGridComments($user,$publication,$comment));
+           
+            db::commit();
+
+            session()->flash($result['status'], $result['message']);
+    
+            return redirect()->action(
+                'PublicationsController@show',
+                ['id' => $request->publication]
+            );
+
+
+        } catch (\Exception $e) {
+     
+            db::rollback();
+
+            $data = array(
+                'status' => 'danger',
+                'message'=> 'Ocurrio un error comentado! '.$e->getMessage()
+                );
+
+            session()->flash($data['status'], $data['message']);
+    
+            return redirect()->action(
+                'PublicationsController@show',
+                ['id' => $request->publication]
+            );
+        }
        
     }
 

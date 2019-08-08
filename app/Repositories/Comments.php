@@ -27,7 +27,7 @@ class CommentRepository
 
             $data = array(
                 'status' => 'success',
-                'message'=>'El commentario se guardo correctamente'
+                'message'=>'El comentario se guardo correctamente'
                 );
 
             DB::commit();
