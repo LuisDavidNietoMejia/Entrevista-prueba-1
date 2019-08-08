@@ -21,6 +21,7 @@ class CommentRepository
 
             $comment = new Comment();
             $comment->content = $commentsData->content;
+            $comment->status = 'Aprobado';
             $comment->publication_id = $commentsData->publication;
             $comment->user_id = Auth::user()->id;
             $result = $comment->save();

@@ -29,6 +29,7 @@
                         @foreach ($comments as $item)
                         <li class="list-group-item">
                                 <blockquote class="blockquote mb-0">
+                                <p >Status Comentario: <p class="text-success">{{ $item->status}}</p></p>
                                     <p>{{ $item->content}}</p>
                                     <footer class="blockquote-footer">Comentando por <cite title="Source Title">
                                             {{$item->user->name }}</cite></footer>
