@@ -16,6 +16,7 @@ class CreateCommentsTable extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('content');
+            $table->enum('status',['Aprobado','Desaprobado'])->default('Desaprobado');
             $table->bigInteger('publication_id')->unsigned();
             $table->foreign('publication_id')->references('id')->on('publications')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
