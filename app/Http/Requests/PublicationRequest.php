@@ -28,4 +28,12 @@ class PublicationRequest extends FormRequest
             'content' => 'required|string|min:04|max:50',
         ];
     }
+
+    public function attributes()
+    {
+        return [
+        'title' => 'titulo',
+        'content' => 'contenido'
+        ];
+    }
 }

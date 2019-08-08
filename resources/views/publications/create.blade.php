@@ -6,10 +6,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card card-default">
-                <div class="card-header text-center">Crear Nueva Publicacion
-                    <div class="btn btn-primary">
-                        <a style="color:white;" href="{{ route('publications.index') }}">Atras</a>
-                    </div>
+                <div class="card-header text-center">Crear Nueva Publicacion                    
                     @include('layouts.listerrores')
                 </div>
                 <div class="panel-body">
@@ -50,6 +47,10 @@
                                 <button id="mostrar" type="submit" class="btn btn-primary">
                                     Registrar Publicacion
                                 </button>
+
+                                <div class="btn btn-danger">
+                                    <a style="color:white;" href="{{ route('publications.index') }}">Atras</a>
+                                </div>                                
                             </div>
                         </div>
                     </form>

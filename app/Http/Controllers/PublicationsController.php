@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Clases\MyPublications;
 use App\Repositories\PublicationRepository;
@@ -54,8 +55,11 @@ class PublicationsController extends Controller
      */
     public function show($id)
     {
-        $publication = Publication::findorfail($id); 
-        return view('publications.show')->with(['publication' => $publication]);
+        $publication = Publication::findorfail($id);
+        $ObjPublications = new MyPublications();
+        $comments = $ObjPublications->getAllCommentPublication($id);
+        $countUser = $ObjPublications->getValidateUserComment(Auth::user()->id, $id);
+        return view('publications.show')->with(['publication' => $publication,'comments' => $comments,'countUser' => $countUser]);
     }
 
     /**

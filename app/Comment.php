@@ -6,11 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-      protected $fillable = [
-        'id','content','user_id',
+    protected $fillable = [
+        'id','content','publication_id','user_id',
       ];
 
-      protected $hidden = [
+    protected $hidden = [
       
       ];
+
+      public function user(){
+        return $this->belongsTo(User::class);
+     }
+
+     public function publication(){
+      return $this->belongsTo(Publication::class);
+   }
 }

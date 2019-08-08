@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use App\Comments;
+use App\Comments;
 use App\Publication;
 use App\Clases\MyPublications;
-use App\Repositories\PublicationRepository;
-use App\Http\Requests\CommentRequest;
-
-
+use App\Repositories\CommentRepository;
+use App\Http\Requests\CommentsRequest;
 
 class CommentsController extends Controller
 {
@@ -39,9 +37,16 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CommentRequest $request)
+    public function store(CommentsRequest $request,CommentRepository $commentObj)
     {
+        $result = $commentObj->create($request);
         
+        session()->flash($result['status'],$result['message']);
+        
+        return redirect()->action(
+            'PublicationsController@show', ['id' => $request->publication]
+        );
+       
     }
 
     /**
