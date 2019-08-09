@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3>{{ $publication->title }}</h3>
-                    @include('layouts.mensajes')
+                    @include('layouts.mensajes')                    
                 </div>
                 <div class="card-body">
                     <blockquote class="blockquote mb-0">

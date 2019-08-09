@@ -27,12 +27,12 @@ class MyPublications
 
     public static function getAllPublications() : CollecionesEloquent
     {
-      // obtener todos los datos de las publicaciones:
-      $publicaciones = null;
+        // obtener todos los datos de las publicaciones:
+        $publicaciones = null;
 
-      $publicaciones = Publication::all();
+        $publicaciones = Publication::all();
 
-      return $publicaciones;
+        return $publicaciones;
     }
 
     public static function getAllCommentPublication($id) : CollecionesEloquent
@@ -46,16 +46,22 @@ class MyPublications
 
     public static function getValidateUserComment($user, $publication) : int
     {
-        
-       // obtener todos los comentarios de una publicacion:
-       // $comments = Publication::find($id)->comment
-       $commentsUser = Comment::join('users', 'comments.user_id', '=', 'users.id')
+        // obtener todos los comentarios de una publicacion:
+        // $comments = Publication::find($id)->comment
+        $commentsUser = Comment::join('users', 'comments.user_id', '=', 'users.id')
                   ->join('publications', 'comments.publication_id', 'publications.id')
                   ->where('publications.id', '=', $publication)
-       			  ->where('users.id', '=', $user)
+                     ->where('users.id', '=', $user)
                   ->count();
                                
         return $commentsUser;
     }
-    
+
+    public static function getCommentsHola()
+    {
+        $commentsHola = Publication::join('comments', 'publications.id', '=', 'comments.publication_id')
+        ->where('comments.content', 'like', 'hola')
+        ->where('comments.status', '=', 'Aprobado')
+        ->get();
+    }
 }

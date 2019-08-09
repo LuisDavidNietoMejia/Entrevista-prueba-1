@@ -12,9 +12,9 @@ use App\Clases\MyPublications;
 use App\Repositories\CommentRepository;
 use App\Http\Requests\CommentsRequest;
 use Mail;
+use Redirect;
+use Session;
 use App\Mail\SengGridComments;
-
-
 
 class CommentsController extends Controller
 {
@@ -46,20 +46,18 @@ class CommentsController extends Controller
      */
     public function store(CommentsRequest $request, CommentRepository $commentObj)
     {
-        try{
+        try {
             
              //iniciamos transaction
-             DB::beginTransaction();
+            DB::beginTransaction();
             
             $ObjPublications = new MyPublications();
             $countUser = $ObjPublications->getValidateUserComment(Auth::user()->id, $request->publication);
            
-            if($countUser == 0){
-                $result = $commentObj->create($request);      
-            }
-            else{
-
-                $result = array('status' => 'Error', 'message' => 'Ya comento esta publicacion');
+            if ($countUser == 0) {
+                $result = $commentObj->create($request);
+            } else {
+                $result = array('status' => 'danger', 'message' => 'Ya comento esta publicacion');
 
                 session()->flash($result['status'], $result['message']);
     
@@ -74,7 +72,7 @@ class CommentsController extends Controller
             $user = User::findorfail(Auth::user()->id);
             $comment = $request->content;
     
-            Mail::to($publication->user->email)->send(new SengGridComments($user,$publication,$comment));
+            Mail::to($publication->user->email)->send(new SengGridComments($user, $publication, $comment));
            
             db::commit();
 
@@ -84,25 +82,24 @@ class CommentsController extends Controller
                 'PublicationsController@show',
                 ['id' => $request->publication]
             );
-
-
         } catch (\Exception $e) {
-     
+            
             db::rollback();
+
+            $message = $e->getMessage();
+
+            // dd($message);
 
             $data = array(
                 'status' => 'danger',
-                'message'=> 'Ocurrio un error comentado! '.$e->getMessage()
-                );
-
-            session()->flash($data['status'], $data['message']);
-    
-            return redirect()->action(
-                'PublicationsController@show',
-                ['id' => $request->publication]
+                'message'=> substr($message, 2, 100)
             );
+           
+            Session::flash($data['status'], $data['message']);
+          
+            return back();
+          
         }
-       
     }
 
     /**
