@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Validator;
 use Input;
 use Redirect;
+use Exception;
 use Carbon\Carbon;
 use DateTime;
 use \App\Publication;
@@ -44,17 +45,32 @@ class MyPublications
         return $comments;
     }
 
-    public static function getValidateUserComment($user, $publication) : int
+    public static function getCountUserComment($user, $publication) : int
     {
         // obtener todos los comentarios de una publicacion:
         // $comments = Publication::find($id)->comment
-        $commentsUser = Comment::join('users', 'comments.user_id', '=', 'users.id')
+        $commentsUserCount = Comment::join('users', 'comments.user_id', '=', 'users.id')
                   ->join('publications', 'comments.publication_id', 'publications.id')
                   ->where('publications.id', '=', $publication)
-                     ->where('users.id', '=', $user)
+                  ->where('users.id', '=', $user)
                   ->count();
-                               
-        return $commentsUser;
+                       
+        return $commentsUserCount;
+    }
+
+    public static function getValidateUserComment($user, $publication) : bool
+    {
+        $commentsUserCount = self::getCountUserComment($user,$publication);
+         
+        if($commentsUserCount > 0){
+
+            $result = array('status' => 'danger', 'message' => 'Ya comento esta publicacion');
+            session()->flash($result['status'], $result['message']);
+            return false;        
+        }  
+        else{
+            return true;            
+        } 
     }
 
     public static function getCommentsHola()

@@ -54,13 +54,9 @@ class CommentsController extends Controller
             $ObjPublications = new MyPublications();
             $countUser = $ObjPublications->getValidateUserComment(Auth::user()->id, $request->publication);
            
-            if ($countUser == 0) {
+            if ($countUser == true) {
                 $result = $commentObj->create($request);
             } else {
-                $result = array('status' => 'danger', 'message' => 'Ya comento esta publicacion');
-
-                session()->flash($result['status'], $result['message']);
-    
                 return redirect()->action(
                     'PublicationsController@show',
                     ['id' => $request->publication]

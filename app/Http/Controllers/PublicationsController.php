@@ -58,7 +58,7 @@ class PublicationsController extends Controller
         $publication = Publication::findorfail($id);
         $ObjPublications = new MyPublications();
         $comments = $ObjPublications->getAllCommentPublication($id);
-        $countUser = $ObjPublications->getValidateUserComment(Auth::user()->id, $id);
+        $countUser = $ObjPublications->getCountUserComment(Auth::user()->id, $id);
         return view('publications.show')->with(['publication' => $publication,'comments' => $comments,'countUser' => $countUser]);
     }
 
