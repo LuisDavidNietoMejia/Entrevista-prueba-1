@@ -40,10 +40,10 @@ class PublicationsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PublicationRequest $request,PublicationRepository $publication)
+    public function store(PublicationRequest $request, PublicationRepository $publication)
     {
         $result = $publication->create($request);
-        session()->flash($result['status'],$result['message']);
+        session()->flash($result['status'], $result['message']);
         return redirect()->action('PublicationsController@index');
     }
 
@@ -55,11 +55,27 @@ class PublicationsController extends Controller
      */
     public function show($id)
     {
-        $publication = Publication::findorfail($id);
-        $ObjPublications = new MyPublications();
-        $comments = $ObjPublications->getAllCommentPublication($id);
-        $countUser = $ObjPublications->getCountUserComment(Auth::user()->id, $id);
-        return view('publications.show')->with(['publication' => $publication,'comments' => $comments,'countUser' => $countUser]);
+        try {
+            $publication = Publication::findorfail($id);
+            
+            $ObjPublications = new MyPublications();
+            $comments = $ObjPublications->getAllCommentPublication($id);
+            $countUser = $ObjPublications->getCountUserComment(Auth::user()->id, $id);
+
+            return view('publications.show')->with(['publication' => $publication,'comments' => $comments,'countUser' => $countUser]);
+        } catch (\Exception $e) {
+            
+            $message = $e->getMessage();
+            
+            $data = array(
+                'status' => 'danger',
+                'message'=> $message
+            );
+           
+            Session::flash($data['status'], $data['message']);
+          
+            return back();
+        }
     }
 
     /**

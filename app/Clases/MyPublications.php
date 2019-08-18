@@ -6,6 +6,7 @@ use Validator;
 use Input;
 use Redirect;
 use Exception;
+use Session;
 use Carbon\Carbon;
 use DateTime;
 use \App\Publication;
@@ -38,11 +39,41 @@ class MyPublications
 
     public static function getAllCommentPublication($id) : CollecionesEloquent
     {
-        
-       // obtener todos los comentarios de una publicacion:
+     
+        try {
+            // obtener todos los comentarios de una publicacion:
         $comments = Publication::find($id)->comment;
-    
-        return $comments;
+        $i = 0;
+        return $i;
+        } catch (\Exception $th) {
+                       
+            $message = $th->getMessage();
+            
+            $data = array(
+                'status' => 'danger',
+                'message'=> $message
+            );
+           
+            Session::flash($data['status'], $data['message']);
+           
+            $comments = Publication::find($id)->comment;
+           return $comments;
+        }
+        catch (\TypeError $th) {
+                       
+            $message = $th->getMessage();
+            
+            $data = array(
+                'status' => 'danger',
+                'message'=> $message
+            );
+           
+            Session::flash($data['status'], $data['message']);
+           
+            $comments = Publication::find($id)->comment;
+           return $comments;
+        }
+       
     }
 
     public static function getCountUserComment($user, $publication) : int
